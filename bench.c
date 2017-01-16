@@ -7,6 +7,8 @@
 #include <pthread.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+#include <sys/time.h>
 
 #define NR_THREADS 20
 #define NR_FILES_PER_THREAD 50
@@ -29,14 +31,14 @@ FILE *files[NR_THREADS][NR_FILES_PER_THREAD];
 pthread_t threads[NR_THREADS];
  
 
-time_t time_creating = 0;
-time_t time_opening  = 0;
-time_t time_writing  = 0;
-time_t time_closing  = 0;
+long time_creating = 0;
+long time_opening  = 0;
+long time_writing  = 0;
+long time_closing  = 0;
 
-time_t time_easy_write   = 0;
-time_t time_normal_write = 0;
-time_t time_hard_write   = 0;
+long time_easy_write   = 0;
+long time_normal_write = 0;
+long time_hard_write   = 0;
 
 int run_tests(); 
 void setup();
@@ -46,7 +48,7 @@ void print_time();
 
 char* create_filepath(int i, int j); 
 void create_file(char *filepath);
-
+long gettime();
 void easy_writes(FILE *file);
 time_t normal_writes(FILE *file);
 time_t hard_writes(FILE *file);
@@ -117,7 +119,9 @@ int run_tests()
 
 void test_creatingfiles()
 {
-    time_t t1 = time(NULL);
+    
+    long t1,t2;
+    t1 = gettime();
     for(int i = 0; i < NR_THREADS; i++) 
     {
        int *val = malloc(sizeof(int));
@@ -129,16 +133,25 @@ void test_creatingfiles()
     {
       pthread_join(threads[i],NULL);
     }
-    time_t t2 = time(NULL);
+    t2 = gettime();
     
     time_creating = t2 - t1;
     
 }
 
+//FROM stackoverflow
+// form http://stackoverflow.com/questions/3756323/getting-the-current-time-in-milliseconds
+long gettime() {
+    struct timeval te; 
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+    return milliseconds;
+}
+
 void test_openingfiles()
 {
 
-    time_t t1 = time(NULL);
+    long t1 = gettime();
     for(int i = 0; i < NR_THREADS; i++) 
     {
        int *val = malloc(sizeof(int));
@@ -150,14 +163,15 @@ void test_openingfiles()
     {
       pthread_join(threads[i],NULL);
     }
-    time_t t2 = time(NULL);
+    long t2 = gettime();
     
     time_opening = t2 - t1;
 }
 
 void test_writingfiles()
 {
-    time_t t1 = time(NULL);
+    long t1,t2;
+    t1 = gettime();
     for(int i = 0; i < NR_THREADS; i++) 
     {
        int *val = malloc(sizeof(int));
@@ -170,11 +184,12 @@ void test_writingfiles()
     {
       pthread_join(threads[i],NULL);
     }
-    time_t t2 = time(NULL);
+    
+    t2 = gettime();
     time_easy_write = t2 - t1; 
     
     
-    t1 = time(NULL);
+    t1 = gettime();
     for(int i = 0; i < NR_THREADS; i++) 
     {
        int *val = malloc(sizeof(int));
@@ -188,10 +203,10 @@ void test_writingfiles()
       pthread_join(threads[i],NULL);
     }
     
-    t2 = time(NULL);
+    t2 = gettime();
     time_normal_write = t2 - t1;
     
-    t1 = time(NULL);
+    t1 = gettime();;
     for(int i = 0; i < NR_THREADS; i++) 
     {
        int *val = malloc(sizeof(int));
@@ -204,14 +219,14 @@ void test_writingfiles()
     {
       pthread_join(threads[i],NULL);
     }
-    t2 = time(NULL);
+    t2 = gettime();
     time_hard_write = t2 - t1;
 }
 
 
 void test_closingfiles()
 {
-    time_t t1 = time(NULL);
+    long t1 = gettime();
     for(int i = 0; i < NR_THREADS; i++) 
     { 
        int *val = malloc(sizeof(int));
@@ -223,7 +238,7 @@ void test_closingfiles()
     {
       pthread_join(threads[i],NULL);
     }
-    time_t t2 = time(NULL);
+    long t2 = gettime();
     
     time_closing = t2 - t1;
 }
