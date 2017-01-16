@@ -468,5 +468,5 @@ void print_time()
     printf("Time writing %d characters: %lo\n",EASY_WRITE_SIZE*NR_EASY_WRITES, time_easy_write);
     printf("Time writing %d characters: %lo\n",NORMAL_WRITE_SIZE*NR_NORMAL_WRITES, time_normal_write);
     printf("Time writing %d characters: %lo\n",HARD_WRITE_SIZE*NR_HARD_WRITES, time_hard_write);  
-    printf("Time closing: %lo\n", time_closing/NR_THREADS);
+    printf("Time closing: %lo\n", time_closing);
 }
